@@ -4,7 +4,7 @@
 
 #### Curso de especialización en Sisteas Embebidos
 
-### Preguntas: 
+### Preguntas:
 
 1. **Describa brevemente las diferencias entre las familias de procesadores Cortex M0, M3 y  M4.**
 
@@ -45,7 +45,8 @@
 6. **Describa los diferentes modos de privilegio y operación del Cortex M, sus relaciones y como se conmuta de uno al otro. Describa un ejemplo en el que se pasa del modo privilegiado a no priviligiado y nuevamente a privilegiado.**
 
 7. **¿Qué se entiende por modelo de registros ortogonal? Dé un ejemplo**
-    El modelo de registros ortogonal implica que el resultado de cualquier operación de la ALU podrá usar como *operators* cualquier registro del micro y su salida (resultado de la operación) podrá guardarse también en cualquier registro. Cuando se realiza una operación de movimiento de registros, este movimiento puede hacerse des de un registro "a" hasta un registro "b".
+
+    El modelo de registros ortogonal implica que cualquier operación de la ALU podrá usar como operador cualquier registro del micro y su salida (resultado de la operación) podrá guardarse también en cualquier registro. Cuando se realiza una operación de movimiento de registros, este movimiento puede hacerse des de un registro "a" hasta un registro "b".
 
 8. **¿Qué ventajas presenta el uso de intrucciones de ejecución condicional (IT)? Dé un ejemplo**
 
@@ -61,6 +62,16 @@
 
 14. **¿Qué es el CMSIS? ¿Qué función cumple? ¿Quién lo provee? ¿Qué ventajas aporta?**
 
+    MSIS es el acrónimo de "*Cortex Microcontroller Software Interface Standart*", la cual es una HAL que no depende del fabricante (es proporcionada por ARM). Esta HAL brinda soporte para:
+
+        - El controlador de interrupciones del sistema (NVIC).
+        - Control del Systic Timer.
+        - Drivers genéricos para los diferentes periféricos.
+        - Proporciona una API para la implementación de sitemas operativos en tiempo real.
+        - Funciones de acceso especial para introducción de código ensamblador.
+        - Define los registros estandar de la arquitectura ARM.
+        - Entre otras.
+
 15. **Cuando ocurre una interrupción, asumiendo que está habilitada ¿Cómo opera el microprocesador para atender a la subrutina correspondiente? Explique con un ejemplo**
 
 16. **¿Cómo cambia la operación de stacking al utilizar la unidad de punto flotante?**
@@ -70,6 +81,8 @@
 18. **¿Qué es el systick? ¿Por qué puede afirmarse que su implementación favorece la portabilidad de los sistemas operativos embebidos?**
 
 19. **¿Qué funciones cumple la unidad de protección de memoria (MPU)?**
+
+    La MPU permite que se puedan proteger contra accesos "peligrosos" las áreas de memoria de un microcontrolador. De esta manera, es posible evitar que determinadas áreas críticas sean accedidas por un sistema operativo o por el programador en tiempo de ejecución y proteger la integridad del sistema.
 
 20. **¿Cuántas regiones pueden configurarse como máximo? ¿Qué ocurre en caso de haber  solapamientos de las regiones? ¿Qué ocurre con las zonas de memoria no cubiertas por las regiones definidas?**
 
