@@ -472,7 +472,7 @@ __STATIC_FORCEINLINE void __set_CONTROL(uint32_t control)
 08000542 <zeros>:
 
 
-void zeros (uint32_t * vector, uint32_t longitud){
+void zeros(uint32_t * vector, uint32_t longitud){
  8000542:	b480      	push	{r7}
  8000544:	b085      	sub	sp, #20
  8000546:	af00      	add	r7, sp, #0
@@ -508,7 +508,6 @@ void zeros (uint32_t * vector, uint32_t longitud){
  8000578:	4770      	bx	lr
 
 0800057a <productoEscalar16>:
-
 
 void productoEscalar16 (uint16_t * vectorIn, uint16_t * vectorOut, uint32_t longitud, uint16_t escalar){
  800057a:	b480      	push	{r7}
@@ -618,9 +617,9 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
  80005fe:	e7fe      	b.n	80005fe <main+0x36>
- 8000600:	2000003c 	.word	0x2000003c
+ 8000600:	20000034 	.word	0x20000034
  8000604:	20000008 	.word	0x20000008
- 8000608:	20000034 	.word	0x20000034
+ 8000608:	20000038 	.word	0x20000038
  800060c:	20000000 	.word	0x20000000
 
 08000610 <SystemClock_Config>:

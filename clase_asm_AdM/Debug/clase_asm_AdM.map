@@ -2508,12 +2508,12 @@ LOAD c:/st/stm32cubeide_1.9.0/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.exte
  *(.bss)
  .bss           0x0000000020000018       0x1c c:/st/stm32cubeide_1.9.0/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.win32_1.0.0.202111181127/tools/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m+fp/hard/crtbegin.o
  *(.bss*)
- .bss.vectorOut
-                0x0000000020000034        0x8 ./Core/Src/main.o
-                0x0000000020000034                vectorOut
  .bss.zero_vector
-                0x000000002000003c        0x4 ./Core/Src/main.o
-                0x000000002000003c                zero_vector
+                0x0000000020000034        0x4 ./Core/Src/main.o
+                0x0000000020000034                zero_vector
+ .bss.vectorOut
+                0x0000000020000038        0x8 ./Core/Src/main.o
+                0x0000000020000038                vectorOut
  .bss.uwTick    0x0000000020000040        0x4 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o
                 0x0000000020000040                uwTick
  *(COMMON)
