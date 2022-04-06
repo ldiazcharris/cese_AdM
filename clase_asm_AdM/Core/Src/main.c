@@ -63,13 +63,18 @@ static void MX_GPIO_Init(void);
 /* USER CODE BEGIN PFP */
 void zeros (uint32_t * vector, uint32_t longitud);
 void productoEscalar32(uint32_t * vectorIn, uint32_t * vectorOut, uint32_t longitud, uint32_t escalar);
+void productoEscalar16(uint16_t * vectorIn, uint16_t * vectorOut, uint32_t longitud, uint16_t escalar);
 
 uint32_t zero_vector[];
 uint32_t longitud1;
 
 uint32_t vectorIn[4] = {1, 2, 3, 4};
-uint32_t vectorOut[sizeof(vectorIn)/sizeof(uint16_t)];
-uint32_t longitud2 = sizeof(vectorIn)/sizeof(uint16_t);
+uint32_t vectorOut[sizeof(vectorIn)/sizeof(uint32_t)];
+uint32_t longitud2 = sizeof(vectorIn)/sizeof(uint32_t);
+
+uint16_t vectorIn1[4] = {1, 2, 3, 4};
+uint16_t vectorOut1[sizeof(vectorIn)/sizeof(uint16_t)];
+uint32_t longitud3 = sizeof(vectorIn)/sizeof(uint16_t);
 
 
 /* USER CODE END PFP */
@@ -146,7 +151,12 @@ void productoEscalar32(uint32_t * vectorIn, uint32_t * vectorOut, uint32_t longi
 		   }
 }
 
+void productoEscalar16(uint16_t * vectorIn, uint16_t * vectorOut, uint32_t longitud, uint16_t escalar){
 
+		  for(uint8_t i = 0; i <= longitud; i++){
+			  vectorOut1[i] = vectorIn1[i]*escalar;
+		   }
+}
 
 
 
@@ -190,7 +200,9 @@ int main(void)
 
   zeros (zero_vector, 3);
 
-  productoEscalar16(vectorIn, vectorOut, longitud2, 2);
+  productoEscalar32(vectorIn, vectorOut, longitud2, 2);
+
+  productoEscalar16(vectorIn1, vectorOut1, longitud3, 2);
 
   /* USER CODE END 2 */
 
