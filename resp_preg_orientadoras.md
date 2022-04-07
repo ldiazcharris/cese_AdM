@@ -38,17 +38,34 @@
 
 3. **¿Qué entiende por arquitectura load-store? ¿Qué tipo de instrucciones no posee este tipo de arquitectura?**
 
+    La arquitectura load-store literalmente significa cargar-guardar, indica que en los procesadores Cortex-M los datos deben cargarse desde la memoria, procesarse y luego volver a escribirse (guardarse) en la memoria utilizando instrucciones separadas. Por ejemplo, para incrementar un valor de datos almacenado en SRAM, el procesador necesita usar *una instrucción* para "cargar" (leer) los datos desde la SRAM y "cargarlos" (guardar) en un registro dentro del procesador, *una segunda* instrucción para incrementar el valor del registro y luego *una tercera* instrucción para volver a escribir el valor en la memoria.
+
 4. **¿Cómo es el mapa de memoria de la familia?**
 
 
 5. **¿Qué ventajas presenta el uso de los “shadowed pointers” del PSP y el MSP?**
+    
     El término "shadowed pointer" se refiere a que se usan dos stak pointers (SP), uno para funciones de OS Kernel y manejadores de interrupciones (Main SP, MSP) y otro para las tareas que se ejecuten en las aplicaciones (Processor SP, PSP).
     
-    Cuando se trabaja en aplicaciones de bare metal, el PSP se puede ignorar y se trabaja simplemente con el MSP. Pero,cuando se implementan soluciones que utilizan un RTOS o un OS Kernel, el uso del "shadowed pointer" es muy práctico, ya que permite separar los SP del modo thread priviligiado (OS Kernel) y del modo handler (excepciones) por un lado y los del modo thread usuario por otro lado. De esta forma, si llegase a fallar el PSP, el MSP seguiría funcionando. 
+    Cuando se trabaja en aplicaciones de bare metal, el PSP se puede ignorar y se trabaja simplemente con el MSP. Pero,cuando se implementan soluciones que utilizan un RTOS o un OS Kernel, el uso del "shadowed pointer" es muy práctico, ya que permite separar los SP del modo thread priviligiado (OS Kernel) y del modo handler (excepciones) por un lado y los del modo thread usuario por otro lado. De esta forma, si llegase a fallar el PSP, el MSP seguiría funcionando.
+
+    Cuando el procesador arranca lo hace utilizando el SP apuntando al MSP y  para cambiar de MSP a PSP se hace con un bit en el registro de control. En el stack se guardan todas las variables declaradas en una función (locales) y con ellas se puede acceder a funciones de interrupciones el SP.
 
 6. **Describa los diferentes modos de privilegio y operación del Cortex M, sus relaciones y como se conmuta de uno al otro. Describa un ejemplo en el que se pasa del modo privilegiado a no priviligiado y nuevamente a privilegiado.**
-    
-    
+
+    Los procesadores Cortex-M tiene dos niveles de privilegio que son:
+    - **Modo privilegiado:** este modo permite el acceso a todas las áreas de memoria del sistema, sin restricción alguna. En este modo se permite escribir cualquier registro. Es tipico operar en este modo siempre que se usan aplicaciones del tipo bare metal. Ejemplo de esto sería, poder escribir en el registro de control.
+    - **Modo no privilegiado:** en este modo la aplición tiene acceso limitado a los registros del sistema, y se le denegará el acceso siempre que intente a acceder a registros especiales como por ejemplo el registro de control. En aplicaciones que usan un OS kernel o un RTOS, el OS siempre corre en modo privilegiado y las tareas en modo no privilegiado (aunque esto puede ser modificado a través del OS).
+
+    El cambio de modos de privilegio se hace a través del registro CONTROL, el cual solo puede accederse desde el modo privilegiado.
+
+    Además, dos modos de operación:
+    - **Modo Handler:** este modo es el que se usa para manejar todas las excepciones. En este modo, la aplicación funciona en modo privilegiado siempre.
+    - **Modo Thread:** este modo es el que se usa cuando se ejecuta el código de aplicación normal y puede estar en modo privilegiado o en modo no privilegiado.
+
+    Una vez se ha accedido a la CPU en desde el modo thread no priviligiado, no es posible volver a tomar el modo thread priviligiado. La única forma de cambiar a modo privilegiado es a través del modo Handler, el cual siempre tiene privilegios de acceso.
+
+    Un ejemplo es pasar del modo privilegiado thread al no privilegiado thread (por decisión de la aplicación), luego al ocurrir una interrupción (NMI u otra) al modo Handler, en este modo modificar el registro CONTROL para luego al privilegiado thread.
 
 7. **¿Qué se entiende por modelo de registros ortogonal? Dé un ejemplo**
 
