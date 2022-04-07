@@ -64,17 +64,20 @@ static void MX_GPIO_Init(void);
 void zeros (uint32_t * vector, uint32_t longitud);
 void productoEscalar32(uint32_t * vectorIn, uint32_t * vectorOut, uint32_t longitud, uint32_t escalar);
 void productoEscalar16(uint16_t * vectorIn, uint16_t * vectorOut, uint32_t longitud, uint16_t escalar);
+void productoEscalar12(uint16_t * vectorIn, uint16_t * vectorOut, uint32_t longitud, uint16_t escalar);
 
 uint32_t zero_vector[];
-uint32_t longitud1;
 
-uint32_t vectorIn[4] = {1, 2, 3, 4};
-uint32_t vectorOut[sizeof(vectorIn)/sizeof(uint32_t)];
-uint32_t longitud2 = sizeof(vectorIn)/sizeof(uint32_t);
+uint32_t vectorIn32[4] = {1, 2, 3, 4};
+uint32_t vectorOut32[sizeof(vectorIn32)/sizeof(uint32_t)];
+uint32_t longitud2 = (uint32_t) sizeof(vectorIn32)/sizeof(uint32_t);
 
-uint16_t vectorIn1[4] = {1, 2, 3, 4};
-uint16_t vectorOut1[sizeof(vectorIn)/sizeof(uint16_t)];
-uint32_t longitud3 = sizeof(vectorIn)/sizeof(uint16_t);
+uint16_t vectorIn16[4] = {1, 2, 3, 4};
+uint16_t vectorOut16[sizeof(vectorIn16)/sizeof(uint16_t)];
+uint32_t longitud3 = (uint32_t) sizeof(vectorIn16)/sizeof(uint16_t);
+
+uint16_t vectorOut12[sizeof(vectorIn16)/sizeof(uint16_t)];
+
 
 
 /* USER CODE END PFP */
@@ -139,25 +142,40 @@ static void PrivilegiosSVC (void)
 
 void zeros(uint32_t * vector, uint32_t longitud){
 
-		  for(uint8_t i = 0; i <= longitud; i++){
+		  for(uint32_t i = 0; i <= longitud; i++){
 			  vector[i] = 0;
 		   }
 }
 
 void productoEscalar32(uint32_t * vectorIn, uint32_t * vectorOut, uint32_t longitud, uint32_t escalar){
 
-		  for(uint8_t i = 0; i <= longitud; i++){
+		  for(uint32_t i = 0; i <= longitud; i++){
 			  vectorOut[i] = vectorIn[i]*escalar;
+
 		   }
 }
 
 void productoEscalar16(uint16_t * vectorIn, uint16_t * vectorOut, uint32_t longitud, uint16_t escalar){
 
-		  for(uint8_t i = 0; i <= longitud; i++){
-			  vectorOut1[i] = vectorIn1[i]*escalar;
+		  for(uint32_t i = 0; i <= longitud; i++){
+			  vectorOut[i] = vectorIn[i]*escalar;
+
 		   }
 }
 
+
+void productoEscalar12 (uint16_t * vectorIn, uint16_t * vectorOut, uint32_t longitud, uint16_t escalar){
+
+	for(uint32_t i=0 ; i < longitud ; i++){
+		uint16_t x = vectorIn[i]*escalar;
+		     if(x >= 4095){
+	        		vectorOut[i] = 4095;
+            }else{
+                    vectorOut[i] = x;
+                }
+
+	}
+}
 
 
 /* USER CODE END 0 */
@@ -199,10 +217,9 @@ int main(void)
   const uint32_t Resultado = asm_sum (5, 3);
 
   zeros (zero_vector, 3);
-
-  productoEscalar32(vectorIn, vectorOut, longitud2, 2);
-
-  productoEscalar16(vectorIn1, vectorOut1, longitud3, 2);
+  productoEscalar16(vectorIn16, vectorOut16, 4, 3);
+  productoEscalar32(vectorIn32, vectorOut32, 4, 3);
+  productoEscalar12 (vectorIn16, vectorOut12, 4, 3000);
 
   /* USER CODE END 2 */
 
