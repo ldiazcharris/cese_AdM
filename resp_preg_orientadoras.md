@@ -40,15 +40,22 @@
 
 4. **¿Cómo es el mapa de memoria de la familia?**
 
+
 5. **¿Qué ventajas presenta el uso de los “shadowed pointers” del PSP y el MSP?**
+    El término "shadowed pointer" se refiere a que se usan dos stak pointers (SP), uno para funciones de OS Kernel y manejadores de interrupciones (Main SP, MSP) y otro para las tareas que se ejecuten en las aplicaciones (Processor SP, PSP).
+    
+    Cuando se trabaja en aplicaciones de bare metal, el PSP se puede ignorar y se trabaja simplemente con el MSP. Pero,cuando se implementan soluciones que utilizan un RTOS o un OS Kernel, el uso del "shadowed pointer" es muy práctico, ya que permite separar los SP del modo thread priviligiado (OS Kernel) y del modo handler (excepciones) por un lado y los del modo thread usuario por otro lado. De esta forma, si llegase a fallar el PSP, el MSP seguiría funcionando. 
 
 6. **Describa los diferentes modos de privilegio y operación del Cortex M, sus relaciones y como se conmuta de uno al otro. Describa un ejemplo en el que se pasa del modo privilegiado a no priviligiado y nuevamente a privilegiado.**
+    
+    
 
 7. **¿Qué se entiende por modelo de registros ortogonal? Dé un ejemplo**
 
     El modelo de registros ortogonal implica que cualquier operación de la ALU podrá usar como operador cualquier registro del micro y su salida (resultado de la operación) podrá guardarse también en cualquier registro. Cuando se realiza una operación de movimiento de registros, este movimiento puede hacerse des de un registro "a" hasta un registro "b".
 
 8. **¿Qué ventajas presenta el uso de intrucciones de ejecución condicional (IT)? Dé un ejemplo**
+
 
 9. **Describa brevemente las excepciones más prioritarias (reset, NMI, Hardfault).**
     **Reset:** es la excepción con mayor prioridad en el vector de interruciones y corresponde a las propias de la arquitectura ARM. Es decri, esta excepción está definida por la propia arquitectura. Esta excepción hace que el microcontrolador se reinicie incondicionalmente. 
@@ -100,6 +107,8 @@
 17. **Explique las características avanzadas de atención a interrupciones: tail chaining y late arrival.**
 
 18. **¿Qué es el systick? ¿Por qué puede afirmarse que su implementación favorece la portabilidad de los sistemas operativos embebidos?**
+
+     SysTick timer: A simple timer included inside the processor. This enables an embedded OS to be used on the wide range of Cortex-M micro-controllers available. Details of the SysTick timer are covered in section 9.5 of this book
 
 19. **¿Qué funciones cumple la unidad de protección de memoria (MPU)?**
 
