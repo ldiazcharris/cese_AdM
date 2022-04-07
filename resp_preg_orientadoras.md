@@ -51,6 +51,27 @@
 8. **¿Qué ventajas presenta el uso de intrucciones de ejecución condicional (IT)? Dé un ejemplo**
 
 9. **Describa brevemente las excepciones más prioritarias (reset, NMI, Hardfault).**
+    **Reset:** es la excepción con mayor prioridad en el vector de interruciones y corresponde a las propias de la arquitectura ARM. Es decri, esta excepción está definida por la propia arquitectura. Esta excepción hace que el microcontrolador se reinicie incondicionalmente. 
+
+    **NMI:** *Non-Maskable Interrupt*, esta excepción se puede generar desde un periférico o desde una fuente externa. Los periféricos que pueden causar una NMI son el Watch Dog Timer o el Brown-out Detector.
+
+    **Hard Fault:** Maneja todas las fallas como excepciones, si el manejador de fallas de la fuente de falla indicada no está habilitado. Es decir, es el manejador de fallas por defecto. El Hard Fault Handler siempre está habilitado. Al igual que *reset* está definido por ARM. El *Hard Fault Status Register* permite monitorear las fuentes de fallas. A continuación, se detallan los flags que es posible monitorear:
+
+   *DEBUGEVT:* Indica que el evento de depuración ocasionó una falla.
+
+    *FORCED:* Indica una falla de bus, una falla de administración de memoria o una falla de uso.
+
+    *VECTBL:* Indica que hay una falla en una operación del "vector fetch" (búsqueda de direcciones en el stack).
+
+    *EXTERNAL:* indica que el evento de depuración es causado por una señal externa (la señal EDBGRQ es una entrada en el procesador, que normalmente se usa en el diseño de varios procesadores para la depuración sincronizada).
+
+    *VCATCH:* indica que el evento de depuración es causado por un "vector catch" (mecanismo del debugger), una función programable que permite que el procesador se detenga automáticamente cuando ingresa cierto tipo de excepción del sistema, incluido el reinicio.
+
+    *DWTTRAP:* Indica que el evento de depuración es causado por un punto de observación.
+
+    *BKPT:* Indica que el evento de depuración es causado por un punto de interrupción.
+
+    *HALTED:* Indica que el procesador se detuvo debido a una solicitud del depurador (incluido un solo paso).
 
 10. **Describa las funciones principales de la pila. ¿Cómo resuelve la arquitectura el llamado a funciones y su retorno?**
 
