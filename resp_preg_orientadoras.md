@@ -36,6 +36,8 @@
 
 2. **¿Por qué se dice que el set de instrucciones Thumb permite mayor densidad de código? Explique**
 
+    
+
 3. **¿Qué entiende por arquitectura load-store? ¿Qué tipo de instrucciones no posee este tipo de arquitectura?**
 
     La arquitectura load-store literalmente significa cargar-guardar, indica que en los procesadores Cortex-M los datos deben cargarse desde la memoria, procesarse y luego volver a escribirse (guardarse) en la memoria utilizando instrucciones separadas. Por ejemplo, para incrementar un valor de datos almacenado en SRAM, el procesador necesita usar *una instrucción* para "cargar" (leer) los datos desde la SRAM y "cargarlos" (guardar) en un registro dentro del procesador, *una segunda* instrucción para incrementar el valor del registro y luego *una tercera* instrucción para volver a escribir el valor en la memoria.

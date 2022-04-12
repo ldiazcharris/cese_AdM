@@ -123,7 +123,7 @@
     asm_productoEscalar16:
         push	{r5, r6}  @cargar en el stack los registros r5 y r6 (crear un contexto)
     .asm_productoEscalar16_for:
-        ldr		r6, [r0], 2 @cargar en r6 la dirección guardada en r0 (vector entrada) +2 bytes
+        ldrh	r6, [r0], 2 @cargar en r6 la dirección guardada en r0 (vector entrada) +2 bytes
         mul 	r5, r6, r3  @multiplicar r6 x r3 y guardar el resultado en r5
         str		r5, [r1], 2 @guardar el valor de r5 en r1 (vector de salida) en la posición +2 bytes
 
