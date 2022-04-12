@@ -47,7 +47,7 @@ ETH_DMADescTypeDef  DMATxDscrTab[ETH_TX_DESC_CNT]; // Ethernet Tx DMA Descriptor
 
 ETH_HandleTypeDef heth;
 */
-UART_HandleTypeDef huart6;
+//UART_HandleTypeDef huart6;
 
 
 /* USER CODE BEGIN PV */

@@ -20,6 +20,8 @@ uint32_t longitud3 = (uint32_t) sizeof(vectorIn16)/sizeof(uint16_t);
 
 uint16_t vectorOut12[sizeof(vectorIn16)/sizeof(uint16_t)];
 
+
+
 void zeros(uint32_t * vector, uint32_t longitud){
 
 		  for(uint32_t i = 0; i <= longitud; i++){
@@ -58,27 +60,21 @@ void productoEscalar12 (uint16_t * vectorIn, uint16_t * vectorOut, uint32_t long
 	}
 }
 
+uint32_t suma(uint32_t *a, uint32_t *b){
+
+	uint32_t x = *a + *b;
+	printf("%d, %d\n", a, b);
+	return x;
+}
+
+uint32_t cont_puntero = 4;
+uint32_t * puntero = &cont_puntero;
 
 void main(void){
 
-    zeros(zero_vector, 4);
+uint32_t valor = suma(&cont_puntero, &cont_puntero);
 
-    productoEscalar16(vectorIn16, vectorOut16, 4, 3);
-
-    productoEscalar32(vectorIn32, vectorOut32, 4, 3);
-
-    productoEscalar12 (vectorIn16, vectorOut12, 4, 3000);
-
- printf("\n\rvector 0\n\r");
- printf("{%d, %d, %d, %d}", zero_vector[0], zero_vector[1], zero_vector[2], zero_vector[3]);
-
- printf("\n\rvector 16\n\r");
- printf("{%d, %d, %d, %d}", vectorOut16[0], vectorOut16[1], vectorOut16[2], vectorOut16[3]);
-
- printf("\n\rvector 32\n\r");
- printf("{%d, %d, %d, %d}", vectorOut32[0], vectorOut32[1], vectorOut32[2], vectorOut32[3]);
-
- printf("\n\rvector 12\n\r");
- printf("{%d, %d, %d, %d}", vectorOut12[0], vectorOut12[1], vectorOut12[2], vectorOut12[3]);
+//printf("%d, %d, %d, %d, %d", puntero, &puntero, *puntero, cont_puntero, &cont_puntero);
+printf("\n%d, %d", *puntero, valor);
     
 }
