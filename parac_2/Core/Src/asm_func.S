@@ -134,5 +134,42 @@
         bx 		lr       @ vuelve adonde fue llamada (especificamente, )
 
 
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@ Prototipo en "C":
+@   void productoEscalar12(uint16_t * vectorIn, uint16_t * vectorOut, uint32_t longitud, uint16_t escalar);
+@
+@ Parametros recibidos:
+@   r0: * vector de entrada con elementos de 16 bits (2 bytes)
+@   r1: * vector de salida con elementos de 16 bits (2 bytes)
+@	r2: longitud del vector
+@	r3: escalar a multiplicar
+
+@ Parametros internos:
+@	r5: registro que servirá como almacenamiento intermedio para cargar las operaciones de multiplicación elemento del vector de entrada
+@	r6: registro que servirá como almacenamiento intermedio para cargar la dirección del vector entrada
+@
+@ Valor de retorno:
+@   r1: un vector ampliado por el escalar, de tamño 12 bits y con saturación
+@
+.thumb_func
+    asm_productoEscalar12:
+        push	{r4, r6}  @cargar en el stack los registros r5 y r6 (crear un contexto)
+        mov		r4, 4095
+    .asm_productoEscalar12_for:
+        ldrh	r6, [r0], 2 @cargar en r6 la dirección guardada en r0 (vector entrada) +2 bytes
+        mul 	r5, r6, r3  @multiplicar r6 x r3 y guardar el resultado en r5
+        subs	r5, r4		@resta 4095 a lo guardado en r5
+        bmi		.guardar_valor @si el resultado anterior es negativo (r5 < 4095) entonces guarda r5 en el vector
+		mov		r5, r4		@si el resultado anterior es positivo (r5 > 4095) entonces satura 12 bits y guarda en r5
+    .guardar_valor:
+        str		r5, [r1], 2 @guardar el valor de r5 en r1 (vector de salida) en la posición +2 bytes
+
+        subs 	r2, 1  @restar 1 a longitud (r2) y cuando llegue a cero actualizar bits N y Z
+        bne  	.asm_productoEscalar12_for
+
+        pop 	{r5, r6} @devolver los registros cargados en el stack a su valor inicial (cambio de contexto)
+        bx 		lr       @ vuelve adonde fue llamada (especificamente, )
+
+
 
 
