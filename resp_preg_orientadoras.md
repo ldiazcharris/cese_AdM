@@ -87,8 +87,18 @@
 
 8. **¿Qué ventajas presenta el uso de intrucciones de ejecución condicional (IT)? Dé un ejemplo**
 
+    Las instrucciones de ejecución condicional permiten modificar el flujo de un programa según las necesidades de ejección. Esto es, permiten evaluar las condiciones de procesamiento actual para ejecutar una o otra instrucción. 
 
+    Ej_2.: Cuando se requieren hacer bucles para ejecutar acciones iterativas. Para esto, se hace una operación de resta de una variable (numero_iteraciones), la cual va a ir disminuyendo a medida que se ejecutan las interaciones, cuando ésta sea cero se deberá usar el sufijo ***NE*** para validar que el flag Z es 0 y con base en eso ejecutar una instrucción que salga del ciclo repetitivo o continuar en él:
 
+        asm_zeros:
+            mov 	r2, 0       
+        .asm_zeros_for:
+            str 	r2, [r0], 4 
+            subs 	r1, 1 
+            bne  	.asm_zeros_for
+            bx 		lr
+    
 9. **Describa brevemente las excepciones más prioritarias (reset, NMI, Hardfault).**
     **Reset:** es la excepción con mayor prioridad en el vector de interruciones y corresponde a las propias de la arquitectura ARM. Es decri, esta excepción está definida por la propia arquitectura. Esta excepción hace que el microcontrolador se reinicie incondicionalmente. 
 
@@ -180,6 +190,8 @@
 
 15. **Cuando ocurre una interrupción, asumiendo que está habilitada ¿Cómo opera el microprocesador para atender a la subrutina correspondiente? Explique con un ejemplo**
 
+
+
 16. **¿Cómo cambia la operación de stacking al utilizar la unidad de punto flotante?**
 
 17. **Explique las características avanzadas de atención a interrupciones: tail chaining y late arrival.**
@@ -201,11 +213,36 @@
 ### ISA
 
 1. **¿Qué son los sufijos y para qué se los utiliza? Dé un ejemplo.**
+    
+    Los sufijos son una especie de modificadores del comportamiento de las instrucciones. Estos sufijos permiten indicar un comportamiento esperado por una función. 
+
+    
+    Por ejemplo: la instrucción ***LDR*** normalmente carga una palabra en el registro indicado, desde una posición de memoria o con un valor constante definido por el programador. Si el sufijo ***h*** se le coloca delante de la instrucción: ***LDRSH***, la instrucción ***LDR** modificará su comportamiento a: tomar sólo media palabra y la cargará en el registro especificado, haciendo que el resto de bits de la palabra (menos significativos) sean cero. 
 
 2. **¿Para qué se utiliza el sufijo ‘s’? Dé un ejemplo.**
 
+    El sufifo ***s*** sirve para indicar que el valor que se está operando en los registros tienen signo. 
+    Ejemplo: cuando se usa con ***LDR***, esta quedará como ***LDRSH*** y permitirá tomar sólo media palabra y la cargará en el registro especificado, teniendo en cuenta que el dato será guardado en complemento a 2 (con signo) si éste es negativo.
+
 3. **¿Qué utilidad tiene la implementación de instrucciones de aritmética saturada? Dé un ejemplo con operaciones con datos de 8 bits.**
 
+    La implementación de instrucciones con aritmética saturada permite modificar el comportamiento del programa cuando en una variable o registro se cargan o se manipulan datos que sobrepasan la dimensión del tipo de dato. La aritmética saturada define que cuando el valor que se carga en una variable es mayor a la capacidad del tipo de dato definido, entonces el valor a cargar será siempre el valor máximo soportado por el tipo de dato. 
+
+    Ejemplo: 
+
+        ldrb r4, [r0], 1
+        mul r5, r4, r3
+	    usat r5, 12, r5
+
 4. **Describa brevemente la interfaz entre assembler y C ¿Cómo se reciben los argumentos de las funciones? ¿Cómo se devuelve el resultado? ¿Qué registros deben guardarse en la pila antes de ser modificados?**
+
+    Para hacer una corecctea interacción entre C y Assembler, se requiere indicarle a assembler que el nombre de una función será global con la instrucción: 
+
+        .global <*nombre de la etiqueta*>
+    Además, en el programa en C, es necesario declarar (incluidos los tipos de datos que recibirá y devolverá) la función que se llamará desde C, la cual debe tener el mismo nombre que la etiqueta global que se declaró en el assembler.
+
+    Dependiendo del número de parámetros que reciba la función, se deberá incializar el stack. Si la función recibe entre 0 y 4 parámetros, no es necesario inicializar el stack para recibir variables. Sin embargo, si se requiere el uso de registros de propósito general, se deben cargarn en el stack estos registros, antes de ser manipulados, para evitar valores inesperados en su uso e inicio. Además, de que cuando se retorne de la función, éstos registros deben quedar igual que cuando se llamó a la función. 
+
+    Los registros en los que se guardan los parámetros que recibe una función son por defecto r0, r1, r2, y r3. Al finalizar, la ejecución de la función, los registros que deben almacenar la información de retorno son r0 para valores de 32bits o r0 y r1 para valores de 64 bits.
 
 5. **¿Qué es una instrucción SIMD? ¿En qué se aplican y que ventajas reporta su uso? Dé un ejemplo.**
