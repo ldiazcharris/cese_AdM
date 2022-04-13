@@ -36,7 +36,9 @@
 
 2. **¿Por qué se dice que el set de instrucciones Thumb permite mayor densidad de código? Explique**
 
-    
+    Actualmente El set de instrucciones Thumb de Cortex-M incluye instrucciones de 16 bits y de 32 bits. Por otro lado, la arquitectura inicial de Cortex-M trabajaba con un set de instrucciones de 32 bits llamada instrucciones ARM. Cuando inició Thumb, lo hizo con instrucciones de 16 bits, lo cual permitía reducir el espacio en memoria para almacenar las instrucciones (esto se traduce en mayor densidad de código), sacrificando funcionalidad, es decir, con menos bits para las instrucciones, puedes pasar menos información por cada instrucción. Además, se podía seguir usando las instruciones ARM de 32 bits, pero el programador tenía que señalizar  en el código fuente (hacer switch), entre el código para ARM y para Thamb, lo cual generaba confuciones.
+
+    Debido a que ahora el set de instrucciones cambió a Thumb2, éste soporta instrucciones tanto de 16 bits como de 32 bits sin tener que hacer el switch, por lo cual, la programación con este set de instruciones es más ágil.
 
 3. **¿Qué entiende por arquitectura load-store? ¿Qué tipo de instrucciones no posee este tipo de arquitectura?**
 
@@ -44,6 +46,16 @@
 
 4. **¿Cómo es el mapa de memoria de la familia?**
 
+    Debido a que la arquitectura de los cortex-M es de 32 bits, la mayor cantidad de memoria direccionable por un bus de este tamaño es de 4Gb, sin embargo, toda esta memoria no se usa como memoria principal. Por lo tanto se ha dividido (y cada fabricante puede hacerlo a su gusto) en 4 partes o regiones según el uso:
+
+    - Memoria de programa
+    - Memoria de datos
+    - Acceso a periféricos
+    - Acceso a Control interno del procesador y componentes de debug.
+
+    A continuación, se presenta el mapa de memoria definido por ARM:
+
+    ![Memory Map Image](memory_map.png)
 
 5. **¿Qué ventajas presenta el uso de los “shadowed pointers” del PSP y el MSP?**
     
@@ -76,6 +88,7 @@
 8. **¿Qué ventajas presenta el uso de intrucciones de ejecución condicional (IT)? Dé un ejemplo**
 
 
+
 9. **Describa brevemente las excepciones más prioritarias (reset, NMI, Hardfault).**
     **Reset:** es la excepción con mayor prioridad en el vector de interruciones y corresponde a las propias de la arquitectura ARM. Es decri, esta excepción está definida por la propia arquitectura. Esta excepción hace que el microcontrolador se reinicie incondicionalmente. 
 
@@ -101,11 +114,57 @@
 
 10. **Describa las funciones principales de la pila. ¿Cómo resuelve la arquitectura el llamado a funciones y su retorno?**
 
+    La pila o stack es un sistema de memoria cuyas función es el almacenamiento temporal de:
+
+    - La dirección de memoria del program counter.
+    - El valor de variables cuando se llaman a funciones. 
+    - El valor de registros diferentes al r0 a r3, cuando las funciones que se llaman tienen más de 4 parámetros.
+    - El estado del procesador cuando ocurre una interrupción
+    - Entre otras. 
+
+    Además, el stack tiene una estructura tipo LIFO (Last In First Out), es decir, almacena la información ordenadamente según su entrada en el stack y la entrega primero la que entró de último.
+
+    **Llamado a funciones:** cuando se llama a una función, la arquitectura almacena en el stack el PC (program counter) desde la posición en que se llama  + una posición, (es decir PC+4), además de los registros involucrados; luego el programa salta hacia donde hata sido llamda la función. Cuando se aplica una instrucción de retorno, el estack devuelve el PC+4, de la última función que hizo una llamada y los registros asociados. De esta forma, se entrega ordenadamente los retornos desde la última llamada realizada junto con la información de su contexto.
+
 11. **Describa la secuencia de reset del microprocesador.**
+
+    El microprocesador puede tener 3 tipos de reinicio:
+        - *Power on rest*: reinicia todo en el microcontrolador. Es decir, el microprocesador, los periféricos y los componentes de debug. 
+        - *System reset*: reinicia sólo el microprocesador y los periféricos, pero mantiene conectado el microcontrolador en el modo debug. 
+        - *Processor rest*: sólo reinicia el microprocesador.
+
+    La secuencia de reset es la siguiente: 
+    - El microprocesador lee las dos primeraspalabras de la memoria
+        - En esta ubicación se encuentra la dirección base del MSP y y el vector de reset. 
+    - El microprocesador carga el MSP y el PC con estos valores respectivamente. 
+    - Luego de esto, según la dirección que tenga el PC, será la instrucción a la que se le hará el *fetch* para empezar a cargar la *pipeline*, de esta manera se empezrán a ejecutar las instrucciones. 
+
+    **Nota.** Es necesario cargar de inmediato el MSP, debido a que mientras se reinicia el microcontrolador, pueden ocurrir otras excepciones con la NMI y Hardfautl, y por lo tanto, se requiere guardar el estado del microcontrolador. 
 
 12. **¿Qué entiende por “core peripherals”? ¿Qué diferencia existe entre estos y el resto de los periféricos?**
 
+    Los "core peripherals" son los perfiféricos del núcleo, es decir aquellos que están relacionados con las funciones internas del microprcesador y son caracterísitcos de la arquitectura ARM. En este caso, se puden mencinoar los soguientes:
+
+    - Nested Vectored Interrupt Controller (NVIC)
+    - System Control Block (SCB)
+    - System timer (Systic)
+    - Memory Protection Unit (MPU)
+    - Data Watchpoint and Trace (DWT)
+    - Flash Patch and Breakpoint (FPB)
+    - Instrumented Trace Macrocell (ITM)
+    - Trace Port Interface Unit (TPIU)
+    - Entre otros. 
+
+    Los otros periféricos, son los que definen al microcontrolador como por ejemplo:
+
+    - Módulos I2C
+    - Móduclos UART
+    - Timers adiconales
+    - entre otros.
+
 13. **¿Cómo se implementan las prioridades de las interrupciones? Dé un ejemplo**
+
+    Los Cortex-M tienen un vector de interrupicones que se conoce como NVIC, el cual contiene todas las excepciones del microcontrolador. Contiene un conjunto de excepciones cuyos niveles de prioridad son los más importantes, estas son: reset (-3), NMI (-2) y HardFault(-1). Estos niveles de prioridad están definidos por ARM. Sin embargo, cada fabricante puede añadir más excepciones con nivels de piroridad configurables. El NVIC acepta hasta 256 excepciones más, de las cuales cada una puede tener de 0 a 128 niveles de prioridad (entre más bajo es el valor, más alta es la prioridad).
 
 14. **¿Qué es el CMSIS? ¿Qué función cumple? ¿Quién lo provee? ¿Qué ventajas aporta?**
 

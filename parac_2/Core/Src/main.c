@@ -225,6 +225,15 @@ int main(void)
 
     productoEscalar16(vectorIn16, vectorOut16, 4, 3);
 
+    char x = vectorOut16[0];
+    uint16_t lon = 16;
+
+    uint8_t * mensaje =  "Hola";
+
+    HAL_UART_Transmit(&huart1, mensaje, 16, 10);
+
+    HAL_UART_Transmit(&huart1, &x, 16, 10);
+
     productoEscalar32(vectorIn32, vectorOut32, 4, 3);
 
     productoEscalar12 (vectorIn16, vectorOut12, 4, 3000);
