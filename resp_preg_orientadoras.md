@@ -246,3 +246,5 @@
     Los registros en los que se guardan los parámetros que recibe una función son por defecto r0, r1, r2, y r3. Al finalizar, la ejecución de la función, los registros que deben almacenar la información de retorno son r0 para valores de 32bits o r0 y r1 para valores de 64 bits.
 
 5. **¿Qué es una instrucción SIMD? ¿En qué se aplican y que ventajas reporta su uso? Dé un ejemplo.**
+
+    Una instrucción SIMD (Single Instruction Multiple Data), es una instrucción que es capaz de 'despachar' múltiples datos con una sola instrucción a diferentes unidades de procesamiento. Es decir, que los datos son procesados en paralelo, con una misma operación, por diferentes unidades de procesamiento. Para esto, la arquitectura del microcporcesador debe soportar este tipo de instrucciones. Estas instrucciones son útiles en procesamiento multimedia (video y audio) ya que estas requieren un nivel de procesamiento en paralelo.
