@@ -190,12 +190,35 @@
 
 15. **Cuando ocurre una interrupción, asumiendo que está habilitada ¿Cómo opera el microprocesador para atender a la subrutina correspondiente? Explique con un ejemplo**
 
+    Una interrupción debe pasar por los siguientes estados:
 
+    - Ocurrencia: ocurre la interrupción
+    - Aceptación: el microprocesador acepta la interrupción
+    - Stacking: se almacena en el stack todos los registros, creando un ***stack frame***. El microprocesador puede usar MSP o PSP para esta operación, dependiendo de si la interrupción ocurrió cuando se estaba usando alguno de los dos tipos de Stack Pointers. A continuación, se muestra un diagrama que ejemplifica esta condición:
+
+        ![msp_psp_stacking](msp_psp_stacking.png)
+
+    - Vector fectch: en paralelo con la operación de stacking, el microprocesador realiza la la operación de búsqueda de instrucciones o ***instruction fetch***, esto gracias a la arquitectura harvard.
+    - Modo Handler: luego de lo anterior, el microprocesador entra en modo Handler para ejecutar las instrucciones. En este modo, siempre se usa el MSP.
+    - Unstacking: cuando finaliza la ejecución de instrucciones en modo Handler, se verifica el registro EXC_RETURN para verificar con cuál de los dos SP se realizará esta operación. Se devuelve el valor del Program Counter guardado en el stack para que se ejecute ***vector fetch*** en paralelo con unstacking. A continuación, se muestra un diagrama de esta situación:
+
+        ![unstacking](unstacking.png)
 
 16. **¿Cómo cambia la operación de stacking al utilizar la unidad de punto flotante?**
 
+    En la operación normal de stacking se guardan los registros Return Addres, PSR, LR, R0-R3 y R12 para devolver los valores que llaman a la función.
+
+    Cuando se usa la unidad de punto flontante (FPU), además de guardar los registros descritos anteriormente, en el stack también se deben guardar los registros S0 a S15 y FPSCR (Floating Point Status y Control Register), para almacenar el estado de la FPU. Sin embargo, esto causa que se tenga que reservar más espacio en el stack y que hayan más ciclos de *push*.
+    
+    Por lo anterior, los cortex-m4 emplean una característica denominada ***Lazy Stacking***, la cual permite reservar el stack para almacenar los registros adicionales de la FPU, pero no se escriben. Si el handler de una excepción requiere del uso de la FPU, estos valores se guardarán en el stack, pero si no es el caso, no se guardarán y al retorno de la excepción, estos registros no se restaurarán del stack porque no han cambiado. Sin embargo, si el microprocesador detecta que se requieren operaciones con la FPU, de inmediato hará el push correspondiente de los registros en el stack. 
+
 17. **Explique las características avanzadas de atención a interrupciones: tail chaining y late arrival.**
 
+    ***Tail chaining:*** consiste en que cuando ocurra el caso de que durante la atención de una interrupción ocurra otra de mayor o igual prioridad, ésta última podrá entrar en estado *pendiente*, hasta que el microprocesador termine de ejecutar la interrupción actual, cuando se termite la interrupción actual atenderá la que está pendiente sin realizar la operación de unstackin y stacking correspondiente. Esto permite reducir el tiempo entre la atención de cada interrupción.
+
+    ***Late arrival:*** esta característica se da para el caso en que si una excepción de mayor prioridad ocurre justo cuando se está ejecutando el stacking de otra interrupción de menor prioridad, la excepción que se atenderá será la de mayor prioridad aunque haya ocurrido después de otra de menor prioridad, siempre y cuando ocurra durante la operación de stacking. 
+    Si una excepción ocurre cuando se está ejecutando el unstacking de otra excepción, este proceso se detendrá para atender la nueva interrupción, esto se conoce como *"pop preemption"*. 
+    
 18. **¿Qué es el systick? ¿Por qué puede afirmarse que su implementación favorece la portabilidad de los sistemas operativos embebidos?**
 
      SysTick timer: A simple timer included inside the processor. This enables an embedded OS to be used on the wide range of Cortex-M micro-controllers available. Details of the SysTick timer are covered in section 9.5 of this book
@@ -206,9 +229,26 @@
 
 20. **¿Cuántas regiones pueden configurarse como máximo? ¿Qué ocurre en caso de haber  solapamientos de las regiones? ¿Qué ocurre con las zonas de memoria no cubiertas por las regiones definidas?**
 
+    La máxima cantidad de regiones que se pueden configurar son ***8*** y cada una puede definir su propia dirección de inicio y fin.
+
+    Si dos regiones se solapan, la zona de memoria en la que se encuentra el solapamiento se regirá según los permisos y características de la región definida que tenga mayor númeor de orden. Ej.: si una dirección está en el rango de la región 1 y la región 4, entonces se usará la configuración de la región 4. 
+
+    Si una zona de memoria no está dentro de las regiones definidas por la MPU, todo acceso a estas regiones será bloquedo y se ejecutará una excepción a través del administrador de memoria (MemManagement) o través de un Hard Fault, si el anterior no está habilitado.
+
 21. **¿Para qué se suele utilizar la excepción PendSV? ¿Cómo se relaciona su uso con el resto de las excepciones? Dé un ejemplo.**
 
+    La excepción PendSV (Pended Service Call), se da después de que ocurre una interrupción u otra excepción justo antes del momento en que se deba ejecutar otra tarea (evento del SysticTimer). Esta excepción es muy útil en los cambios de contexto, ya que si una interrupción ocurre justo antes del evento del systic, el cambio de contexto no se podrá ejecutar y se retrasará la ejecución del handler destinado a la interrupción. En los cortex-m4 y m3, no es posible volver al modo thread cuando hay una interrupción pendiente. 
+
+    Para estos casos, se usa la excepción pendSV, a la cual se le debe configurar la prioridad más baja, para que pueda ejecutarse después de otra interrupción o excepción. De este modo, siempre que haya una interrupción, después de esta sobrevendrá la pendSV, y será posible **retrasar el cambio de tarea**, dando espacio a que se termine de ejecutar la excepción que llamó antes del cambio del evento del systic y luego se haga el cambio de contexto correctamente. 
+
+    A continuacion, se muestra un diagrama de esta situción:
+    ![pendSV_diagram](pendSV_diagram.png)
+
 22. **¿Para qué se suele utilizar la excepción SVC? Expliquelo dentro de un marco de un sistema operativo embebido.**
+
+    La excepción SVC se usa, en el contexto de los sistemas operativos, para otorgarle aun usuario (tarea en modo thread no priviliegiado) acceso a periféricos o memoria protegida (región MPU), que se hayan definido sin acceso para el modo no priviligiado. De esta manera, se hace un cambio de modo, al denominado modo Handler, que siempre tienen privilegios de administrador. A continuación se muestra un diagrama que ilustra esta situación.  
+
+    ![svc_diagram](svc_diagram.png)
 
 ### ISA
 
