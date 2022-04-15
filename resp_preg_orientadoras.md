@@ -288,3 +288,8 @@
 5. **¿Qué es una instrucción SIMD? ¿En qué se aplican y que ventajas reporta su uso? Dé un ejemplo.**
 
     Una instrucción SIMD (Single Instruction Multiple Data), es una instrucción que es capaz de 'despachar' múltiples datos con una sola instrucción a diferentes unidades de procesamiento. Es decir, que los datos son procesados en paralelo, con una misma operación, por diferentes unidades de procesamiento. Para esto, la arquitectura del microcporcesador debe soportar este tipo de instrucciones. Estas instrucciones son útiles en procesamiento multimedia (video y audio) ya que estas requieren un nivel de procesamiento en paralelo.
+
+
+### Referencias
+
+Todos los conceptos e imágnes en este documento fueron tomadas del libro: *"The definitive guide to ARM CORTEX -M3 and CORTEX -4 Processors"* de Joseph Yiu. 3ra Edición. 
