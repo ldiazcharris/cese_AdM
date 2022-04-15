@@ -35,10 +35,21 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 
+//*******EJERCICIO 1:
 void zeros (uint32_t * vector, uint32_t longitud);
+
+//*******EJERCICIO 2:
 void productoEscalar32(uint32_t * vectorIn, uint32_t * vectorOut, uint32_t longitud, uint32_t escalar);
+
+//*******EJERCICIO 3:
 void productoEscalar16(uint16_t * vectorIn, uint16_t * vectorOut, uint32_t longitud, uint16_t escalar);
+
+//*******EJERCICIO 4:
 void productoEscalar12(uint16_t * vectorIn, uint16_t * vectorOut, uint32_t longitud, uint16_t escalar);
+
+//*******EJERCICIO 5:
+void filtroVentana10(uint16_t * vectorIn, uint16_t * vectorOut, uint32_t longitudVectorIn);
+
 
 uint32_t zero_vector[];
 
@@ -51,6 +62,8 @@ uint16_t vectorOut16[sizeof(vectorIn16)/sizeof(uint16_t)];
 
 
 uint16_t vectorOut12[sizeof(vectorIn16)/sizeof(uint16_t)];
+
+
 
 /* USER CODE END PD */
 
@@ -179,6 +192,10 @@ void productoEscalar12 (uint16_t * vectorIn, uint16_t * vectorOut, uint32_t long
 	}
 }
 
+
+void filtroVentana10(uint16_t * vectorIn, uint16_t * vectorOut, uint32_t longitudVectorIn){
+
+}
 
 
 
