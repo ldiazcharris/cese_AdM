@@ -221,7 +221,10 @@
     
 18. **¿Qué es el systick? ¿Por qué puede afirmarse que su implementación favorece la portabilidad de los sistemas operativos embebidos?**
 
-     SysTick timer: A simple timer included inside the processor. This enables an embedded OS to be used on the wide range of Cortex-M micro-controllers available. Details of the SysTick timer are covered in section 9.5 of this book
+    SysTick timer: es un temporizador simple de 24 bits del tipo decremental, que se encuentra incorporado en el microprocesador. Hace parte del vector de interrupciones y genera la excepción SysTick. Puede trabajar a la frecuencia del oscilador interno o a la frecuencia de un oscilador externo.  
+    
+    Su implementación favorece a la portabilidad de sistemas operativos debido a que los microprocesadores Cortex-M que lo incorporan (M4 y M3), tienen el mismo tipo de SysticTimer y lo pueden usar por defecto.
+
 
 19. **¿Qué funciones cumple la unidad de protección de memoria (MPU)?**
 
