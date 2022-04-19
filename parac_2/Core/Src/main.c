@@ -50,6 +50,21 @@ void productoEscalar12(uint16_t * vectorIn, uint16_t * vectorOut, uint32_t longi
 //*******EJERCICIO 5:
 void filtroVentana10(uint16_t * vectorIn, uint16_t * vectorOut, uint32_t longitudVectorIn);
 
+//*******EJERCICIO 6:
+
+void pack32to16(int32_t * vectorIn, int16_t *vectorOut, uint32_t longitud);
+
+//*******EJERCICIO 7:
+
+int32_t max(int32_t *vectorIn, uint32_t longitud);
+
+//*******EJERCICIO 8:
+
+void downsampleM(int32_t * vectorIn, int32_t * vectorOut, uint32_t longitud, uint32_t N);
+
+//*******EJERCICIO 9:
+
+void invertir(uint16_t * vector, uint32_t longitud);
 
 uint32_t zero_vector[];
 
@@ -62,6 +77,9 @@ uint16_t vectorOut16[sizeof(vectorIn16)/sizeof(uint16_t)];
 
 
 uint16_t vectorOut12[sizeof(vectorIn16)/sizeof(uint16_t)];
+
+uint32_t vectorV10In[20]={0};
+uint32_t vectorV10Out[20]={0};
 
 
 
@@ -181,7 +199,7 @@ void productoEscalar16(uint16_t * vectorIn, uint16_t * vectorOut, uint32_t longi
 
 void productoEscalar12 (uint16_t * vectorIn, uint16_t * vectorOut, uint32_t longitud, uint16_t escalar){
 
-	for(uint32_t i=0 ; i < longitud ; i++){
+	for(uint32_t i = 0 ; i < longitud ; i++){
 		uint16_t x = vectorIn[i]*escalar;
 		     if(x >= 4095){
 	        		vectorOut[i] = 4095;
@@ -195,7 +213,86 @@ void productoEscalar12 (uint16_t * vectorIn, uint16_t * vectorOut, uint32_t long
 
 void filtroVentana10(uint16_t * vectorIn, uint16_t * vectorOut, uint32_t longitudVectorIn){
 
+	uint32_t ventana = 10;
+	uint32_t acum = 0;
+
+
+	for(uint32_t i = 0; i >= longitudVectorIn ; i++){
+
+		for(uint32_t j = 0 ; j >= ventana ; j++){
+
+			if((i + j) < longitudVectorIn){
+				acum =+ vectorIn[i+j];
+			}else{
+				const uint8_t s = (i + j) - longitudVectorIn;
+				acum =+ vectorIn[s];
+			}
+
+		}
+		vectorOut[i] = acum/ventana;
+
+		}
+
+
+	}
+
+
+void pack32to16(int32_t * vectorIn, int16_t *vectorOut, uint32_t longitud){
+
+
+	for(uint32_t i = 0; i <= longitud; i++){
+
+			vectorOut[i] = (int16_t)(vectorIn[i]>>16);
+	}
 }
+
+
+int32_t max(int32_t *vectorIn, uint32_t longitud){
+	uint32_t j = 0;
+
+	for(uint32_t i = 0 ; i <= longitud ; i++){
+
+		if(vectorIn[i] > vectorIn[j]){
+				j = i;
+		}
+	}
+	return j;
+}
+
+
+void downsampleM(int32_t *vectorIn, int32_t *vectorOut, uint32_t longitud, uint32_t N){
+	uint32_t j = 0;
+	uint32_t muestra = 0;
+
+	for(uint32_t i = 0; i < longitud; i++){
+
+		if(muestra == N){
+
+			muestra = 0;
+		}else{
+
+			vectorOut[j] = vectorIn[i];
+			j++;
+			muestra++;
+		}
+	}
+}
+
+
+void invertir(uint16_t * vector, uint32_t longitud){
+
+	uint32_t j = longitud - 1;
+	uint32_t iter = longitud / 2;
+	uint32_t clip = 0;
+
+	for(uint32_t i = 0; i <= iter; i++){
+		clip = vector[i];
+		vector[i] = vector[j - i];
+		vector[j - i] = clip;
+	}
+
+}
+
 
 
 
@@ -241,15 +338,6 @@ int main(void)
     zeros (zero_vector, 3);
 
     productoEscalar16(vectorIn16, vectorOut16, 4, 3);
-
-    char x = vectorOut16[0];
-    uint16_t lon = 16;
-
-    uint8_t * mensaje =  "Hola";
-
-    HAL_UART_Transmit(&huart1, mensaje, 16, 10);
-
-    HAL_UART_Transmit(&huart1, &x, 16, 10);
 
     productoEscalar32(vectorIn32, vectorOut32, 4, 3);
 
