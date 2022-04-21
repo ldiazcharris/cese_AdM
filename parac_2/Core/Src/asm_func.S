@@ -9,6 +9,11 @@
 .global asm_productoEscalar32
 .global productoEscalar16
 .global productoEscalar12
+.global asm_filtroVentana10
+.global asm_pack32to16
+.global asm_max
+.global asm_downsampleM
+.global asm_invertir
 
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -171,5 +176,66 @@
         bx 		lr       @ vuelve adonde fue llamada (especificamente, )
 
 
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@ Prototipo en "C":
+@   asm_filtroVentana10(uint16_t * vectorIn, uint16_t * vectorOut, uint32_t longitudVectorIn);
+@
+@ Parametros recibidos:
+@   r0: *vectorIn
+@   r1: *vectorOut
+@   r2: longitud del vector
+@
+
+@ Parametros internos:
+@	r3: acumula la suma de los valores dela ventana
+@	r5: guarda temporalmente el valor del vector de entrada
+@	r6: contador del for principal
+@	r7: guarda el tamaño de la ventana
+@	r8: guarda temporalemente los promedios calculados
+@ 	r9: contador del for de la ventana
+@	r10:
+@	r11:
+@
+@
+@ Valor de retorno:
+@   r1: un vector ampliado por el escalar, de tamño 12 bits y con saturación
+@
+
+.thumb_func
+    asm_filtroVentana10:
+        push 	{r4-r11} 		@ cargar en el stack los registros r5 y r6 (crear un contexto)
+        mov 	r5, r0			@ se carga vectorIn en r5
+        mov 	r7, 10			@ r7 define el tamaño de la ventana
+        mov 	r6, 0			@ r6 guarda las iteraciones del for principal (i)
+
+    .asm_filtroVentana10_for:
+        mov 	r3, 0			@ se limpia r3 en cada iteracion para vaciar la ventana
+        mov 	r9, r6          @ r9 guarda las iteraciones del for de la ventana actualiza su valor en cada iteracion del for principal
+        mov 	r5, r0			@ se carga el vectorIn en cada iteración
+
+    .asm_filtroVentana10_ventanaFor:
+       udiv 	r10, r9, r2		@ divide el numero de iteracion entre tamaño del vector y guarda en r10
+       mul 		r11, r10, r2	@ multiplica lo anterior por el tamaño del vector
+       sub 		r10, r9, r11	@ se hace el roll-over cuando se supera el tamaño del vector
+
+       add 		r5, r0, r10, LSL #1     @ se incrementa en 1 la posición del vector
+       add 		r9, 1                   @ se incrementa el contador del for de ventana
+
+       ldrh 	r4, [r5]       	@ cargo el valor del VectorIn
+       add 		r3, r4          @ lo sumo a lo acumulado
+
+       subs 	r7, 1			@ se decrementa el valor de la ventana en cada iteracion
+       bne 		.asm_filtroVentana10_ventanaFor
+
+       mov 		r7, 10			@ se carga nuevamente la ventana con 10 para el siguiente grupo de ciclos
+
+       udiv 	r8, r3, r7         @
+       strh 	r8, [r1], 2        @ lo guardo en el vector de salida
+       add 		r6,1                @ i++
+       cmp 		r2, r6              @ comparo si ya se alcanzo la longitud del vector
+       bne 		.asm_filtroVentana10_for
+
+       pop 		{r4-r11}
+       bx 		lr
 
 
