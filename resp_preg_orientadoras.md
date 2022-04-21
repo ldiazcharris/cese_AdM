@@ -205,7 +205,7 @@
         ![unstacking](unstacking.png)
 
 16. **¿Cómo cambia la operación de stacking al utilizar la unidad de punto flotante?**
-
+     pág. 275 en adelante.Sección 8.1.3
     En la operación normal de stacking se guardan los registros Return Addres, PSR, LR, R0-R3 y R12 para devolver los valores que llaman a la función.
 
     Cuando se usa la unidad de punto flontante (FPU), además de guardar los registros descritos anteriormente, en el stack también se deben guardar los registros S0 a S15 y FPSCR (Floating Point Status y Control Register), para almacenar el estado de la FPU. Sin embargo, esto causa que se tenga que reservar más espacio en el stack y que hayan más ciclos de *push*.
