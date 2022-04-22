@@ -312,3 +312,39 @@
         pop 	{r4, r5}
         bx 		lr				@ vuelve adonde fue llamada
 
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@ Prototipo en "C":
+@   void invertir(uint16_t * vector, uint32_t longitud);
+@
+@ Parametros recibidos:
+@   r0: * vector de entrada con elementos de 16 bits (2 bytes)
+@   r1: longitud del vector (numero de iteraciones)
+@
+@
+@ Parametros internos:
+@	r2: almacena la posición final del vector
+@	r3: almacena el número de iteraciones
+@	r4: almacena temporalmente las posiciones para intercambiar con r0
+@	r5: almacena temporalmente las posiciones para intercambiar con r2
+@
+@ Valor de retorno:
+@   r0: vector con valores invertidos
+
+
+
+.thumb_func
+    asm_invertir:
+        push 	{r4-r5}
+        mov 	r2, 2			@ almacena temporalemente 2 para hacer la división
+		udiv 	r3, r1, r2		@ se calcula el número dividendo por 2, ya que solo se requiere la mitad de las iteraciones
+		ldrh 	r2, [r0, -2]	@ se carga la última posición del vector entrada en r2
+    .asm_invertir_for:
+        ldrh 	r4, [r0], 2     @ se carga la posición inicial del vector en r4
+        ldrh 	r5, [r2], -2    @ se carga la posicion final del vector en r5
+        strh 	r4, [r0], 2     @ se invierten las posicones finales e iniciales
+        strh 	r5, [r2], -2    @ se invierten las posicones finales e iniciales
+        subs 	r3, 1
+        bne 	.asm_invertir_for
+        pop 	{r4-r5}
+        bx 		lr
