@@ -178,7 +178,7 @@
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @ Prototipo en "C":
-@   asm_filtroVentana10(uint16_t * vectorIn, uint16_t * vectorOut, uint32_t longitudVectorIn);
+@   filtroVentana10(uint16_t * vectorIn, uint16_t * vectorOut, uint32_t longitudVectorIn);
 @
 @ Parametros recibidos:
 @   r0: *vectorIn
@@ -193,8 +193,8 @@
 @	r7: guarda el tamaño de la ventana
 @	r8: guarda temporalemente los promedios calculados
 @ 	r9: contador del for de la ventana
-@	r10:
-@	r11:
+@	r10: registros temporales
+@	r11: registros temporales
 @
 @
 @ Valor de retorno:
@@ -218,24 +218,24 @@
        mul 		r11, r10, r2	@ multiplica lo anterior por el tamaño del vector
        sub 		r10, r9, r11	@ se hace el roll-over cuando se supera el tamaño del vector
 
-       add 		r5, r0, r10, LSL #1     @ se incrementa en 1 la posición del vector
+       add 		r5, r0, r10, LSL 1     @ se incrementa en 1 la posición del vector
        add 		r9, 1                   @ se incrementa el contador del for de ventana
 
-       ldrh 	r4, [r5]       	@ cargo el valor del VectorIn
-       add 		r3, r4          @ lo sumo a lo acumulado
+       ldrh 	r4, [r5]       	@ se carga el valor del VectorIn
+       add 		r3, r4          @ se suma el valor anterior con el actual
 
        subs 	r7, 1			@ se decrementa el valor de la ventana en cada iteracion
        bne 		.asm_filtroVentana10_ventanaFor
 
        mov 		r7, 10			@ se carga nuevamente la ventana con 10 para el siguiente grupo de ciclos
 
-       udiv 	r8, r3, r7         @
-       strh 	r8, [r1], 2        @ lo guardo en el vector de salida
-       add 		r6,1                @ i++
-       cmp 		r2, r6              @ comparo si ya se alcanzo la longitud del vector
+       udiv 	r8, r3, r7      @ se saca el promedio de los valores acumulados
+       strh 	r8, [r1], 2     @ se guarda en elpromedio en el vector de salida
+       add 		r6,1            @ se incrementa el contador del for principal
+       cmp 		r2, r6          @ se valida si llegó a al último elemento del vectorIn
        bne 		.asm_filtroVentana10_for
 
-       pop 		{r4-r11}
-       bx 		lr
+       pop 		{r4-r11}		@devolver los registros cargados en el stack a su valor inicial (cambio de contexto)
+       bx 		lr				@ vuelve adonde fue llamada
 
 
