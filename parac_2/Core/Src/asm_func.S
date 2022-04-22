@@ -315,6 +315,48 @@
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @ Prototipo en "C":
+@   void downsampleM(int32_t *vectorIn, int32_t *vectorOut, uint32_t longitud, uint32_t N);
+@
+@ Parametros recibidos:
+@   r0: * vector de entrada con elementos de 32 bits (4 bytes)
+@   r1: * vector de salida
+@	r2: longitud del vector
+@	r3: Numero de muestra a decimar
+
+@ Parametros internos:
+@	r4: guarda el contador del for
+@	r5: acumula el conteo de muestras para identificar la posición a decimar
+@	r6:	almacena temporalmente el valor de la posición
+@
+@ Valor de retorno:
+@   r1: vector con elementos decimados de vector entrada
+
+.thumb_func
+	asm_downsampleM:
+		push 	{r4-r6}
+		mov 	r4, 0           @ se inicializa el contador del for en 0
+		mov 	r5, 0			@ se inicializa el acumulador de muestras
+		mov 	r6, 0			@ se limpia el registro para evitar espurias
+	.asm_downsampleM_for:
+		cmp 	r3, r5			@ se compara N con la posición actual
+		bne 	.continue 		@ salta si la muestra es igual
+	.decimar:
+		ldr 	r6, [r0], 4		@ se guarda la muestra en r6 pero se descarta
+		mov 	r5, 0			@ reinicia el contador de muestras
+	.continue:
+		ldr 	r5, [r0], 4		@ si pasó por decimar, se reemplaza la muestra decimada (descarte)
+		str 	r5,[r1], 4		@ guarda las muestras no decimadas en vector salida (cada iteracion)
+		add 	r4, 1			@ se aumenta el número de iteraciones del for
+		add 	r5, 1			@ aumenta el contador de muestras
+		cmp 	r2, r4			@ compara la longitud del vector con el número de iteraciones realizadas
+		bne 	.asm_downsampleM_for	@ salta si no se ha recorrido todo el vector
+		pop 	{r4-r6}
+ 		bx 		lr				@ vuelve adonde fue llamada
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@ Prototipo en "C":
 @   void invertir(uint16_t * vector, uint32_t longitud);
 @
 @ Parametros recibidos:
