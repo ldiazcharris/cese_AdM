@@ -266,3 +266,49 @@
         bne 	.asm_pack32to16_for @ salta si z != 0
         pop 	{r4}
         bx 		lr				@ vuelve adonde fue llamada
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@ Prototipo en "C":
+@  int32_t max(int32_t *vectorIn, uint32_t longitud);
+@
+@ Parametros recibidos:
+@   r0: * vector de entrada con elementos de 32 bits (4 bytes)
+@   r1: longitud del vector (numero de iteraciones)
+@
+@
+@ Parametros internos:
+@   r2: pivote de comparación
+@   r3: posicion del maximo
+@	r4: maximo temporal
+@   r5: indice del vector y contador del for
+@
+@ Valor de retorno:
+@   r0: la posición del elemento de mayor valor en el vector de entrada
+
+.thumb_func
+    asm_max:
+        push 	{r4, r5}
+        mov		r2, 0			@ se inicia el pivote en 0
+        mov 	r3, 0           @ Posición inicial 0
+        ldr 	r4, [r0]        @ se carga la posición 0 del vector de entrada en r4 como max temporal
+        mov 	r5, 0           @ se inicia la posición en 0
+    .asm_max_for:
+        ldr 	r2, [r0], 4     @ se cargan las posiciones del vector entrada en r2 en cada iteracion
+        cmp 	r2, r4          @ compara los valores y se actualizan los flags de STATUS
+        bgt 	.greater_than	@ salta si r2 es mayor que r4
+        b		.continue		@ salta a continue si r2 no es mayor
+    .greater_than:
+        mov 	r4, r2          @ se actualiza el maximo temporal con r2
+        mov 	r3, r5          @ se carga el numero de la iteracion como el inidice del valor max actual
+    .continue:
+        add 	r5, 1           @ se incrementa la cuenta del for
+        subs 	r1, 1          	@ se descuenta el numero de iteraciones
+        bne 	.asm_max_for 	@ salta si no se han acabado las iteraciones
+        mov 	r0, r3          @ cuando se recorre todo el vector carga en r0 el valor de la pos. del max
+        pop 	{r4, r5}
+        bx 		lr				@ vuelve adonde fue llamada
+
