@@ -238,4 +238,31 @@
        pop 		{r4-r11}		@devolver los registros cargados en el stack a su valor inicial (cambio de contexto)
        bx 		lr				@ vuelve adonde fue llamada
 
-
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@ Prototipo en "C":
+@   void pack32to16(int32_t * vectorIn, int16_t *vectorOut, uint32_t longitud);
+@
+@ Parametros recibidos:
+@   r0: * vector de entrada con elementos de 32 bits (4 bytes)
+@   r1: * vector de salida con elementos de 16 bits (2 bytes)
+@	r2: longitud del vector
+@
+@
+@ Parametros internos:
+@	r4: memoria temporal del empaquetamiento
+@
+@ Valor de retorno:
+@   r1: vector con elementos de 16 bits, empaquetando 32 bits
+@
+.thumb_func
+    asm_pack32to16:
+        push 	{r4}
+        mov 	r3, 0			@ se inicializa r3 en 0 para limpiar espurias
+    .asm_pack32to16_for:
+        ldr		r3, [r0], 4     @ se carga en r3 la posicion de r0 (vector entrada)
+        mov		r4, r3, lsr 16 @ se guarda en r4 los 16 MSB
+        strh 	r4, [r1], 2    	@ se guardan los 16 LSB de r4 en r1 (vector salida)
+        subs 	r2, 1         	@ se resta 1 a r2 (longitud vector) y se actualizan los flags de estatus
+        bne 	.asm_pack32to16_for @ salta si z != 0
+        pop 	{r4}
+        bx 		lr				@ vuelve adonde fue llamada
